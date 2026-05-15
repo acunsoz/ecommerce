@@ -30,4 +30,7 @@ public class ProductDTO {
     private BigDecimal price;
 
     private Long categoryId;
+
+    private String imageUrl;
+
 }

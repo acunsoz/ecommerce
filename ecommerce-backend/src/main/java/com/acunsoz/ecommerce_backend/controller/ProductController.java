@@ -2,13 +2,19 @@ package com.acunsoz.ecommerce_backend.controller;
 
 import com.acunsoz.ecommerce_backend.model.dto.ProductDTO;
 import com.acunsoz.ecommerce_backend.model.entity.Product;
-import com.acunsoz.ecommerce_backend.model.mapper.ProductMapper;
+import com.acunsoz.ecommerce_backend.model.mapper.IProductMapper;
+import com.acunsoz.ecommerce_backend.service.FileService;
 import com.acunsoz.ecommerce_backend.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,26 +23,39 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductMapper productMapper;
+    private final IProductMapper productMapper;
+    private final FileService fileService;
 
-    @PostMapping
-    public ProductDTO createProduct(@Valid @RequestBody ProductDTO productDTO)
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<ProductDTO> createProduct(
+            @RequestPart(value = "image", required = false) MultipartFile imageFile,
+            @RequestPart("productData") String productDataJson) throws IOException
     {
-        Product product = productMapper.toEntity(productDTO);
 
-        Product savedProduct = productService.saveProduct(product);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductDTO productDTO = objectMapper.readValue(productDataJson, ProductDTO.class);
 
-        return productMapper.toDTO(savedProduct);
+        if (imageFile != null && !imageFile.isEmpty()){
+
+            String savedFileName = fileService.saveImages(imageFile);
+
+            productDTO.setImageUrl(savedFileName);
+
+        }
+
+        ProductDTO savedProduct = productService.saveProduct(productDTO);
+
+        return new ResponseEntity<>(savedProduct,HttpStatus.CREATED);
+
     }
 
     @GetMapping
-    public List<ProductDTO> getAllProducts()
+    public Page<ProductDTO> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    )
     {
-        List<Product> productsAll = productService.getAllProducts();
-
-        return productsAll.stream()
-                .map(productMapper::toDTO)
-                .toList();
+        return productService.getAllProducts(page,size);
 
     }
 
@@ -53,7 +72,7 @@ public class ProductController {
         product.setId(id);
         Product updatedProduct = productService.updateProduct(id,product);
 
-        return productMapper.toDTO(updatedProduct);
+        return productMapper.toDto(updatedProduct);
 
     }
 
@@ -62,7 +81,7 @@ public class ProductController {
     {
         List<Product> searchList = productService.searchProducts(keyword);
         return searchList.stream()
-                .map(productMapper::toDTO)
+                .map(productMapper::toDto)
                 .toList();
     }
 

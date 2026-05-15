@@ -39,4 +39,6 @@ public class Product {
     @ToString.Exclude
     private Category category;
 
+    private String imageUrl;
+
 }
