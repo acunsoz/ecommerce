@@ -28,6 +28,7 @@ public class SecurityConfig {
                         requestMatchers("/api/auth/**", "/images/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/products").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/products").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/orders/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
 
