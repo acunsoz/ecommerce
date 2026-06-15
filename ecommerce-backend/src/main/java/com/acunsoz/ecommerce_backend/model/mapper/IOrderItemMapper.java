@@ -10,6 +10,7 @@ public interface IOrderItemMapper {
 
     @Mapping(source = "product.id",target = "productId")
     @Mapping(source = "product.name",target = "productName")
+    @Mapping(source = "product.imageUrl", target = "imageUrl")
     OrderItemDto toDto(OrderItem orderItem);
 
 }

@@ -10,6 +10,7 @@ public interface ICartItemMapper {
 
     @Mapping(source = "product.id" ,target = "productId")
     @Mapping(source = "product.name",target = "productName")
+    @Mapping(source = "product.imageUrl", target = "imageUrl")
     CartItemDto toDto(CartItem cartItem);
 
 }

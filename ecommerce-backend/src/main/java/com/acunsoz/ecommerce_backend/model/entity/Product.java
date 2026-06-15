@@ -24,6 +24,7 @@ public class Product {
     private String name;
 
     //@Column yazılmasa da değişken ismi ile aynı isimdeki sütunu arar.
+    @Column(length = 1000)
     private String description;
 
     // para biriminde double yerine bu kullanılır hassasiyet kaybı olmasın diye
@@ -40,5 +41,8 @@ public class Product {
     private Category category;
 
     private String imageUrl;
+
+
+    private Long adminId;
 
 }

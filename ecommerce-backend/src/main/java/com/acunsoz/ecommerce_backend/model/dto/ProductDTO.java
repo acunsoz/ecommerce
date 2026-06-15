@@ -33,4 +33,7 @@ public class ProductDTO {
 
     private String imageUrl;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long adminId;
+
 }

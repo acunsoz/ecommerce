@@ -1,0 +1,14 @@
+# 1. Aşama: Maven ile projeyi derle (Build)
+FROM maven:3.8.4-openjdk-17-slim AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# 2. Aşama: Sadece derlenen JAR dosyasını al ve çalıştır (Run)
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+# Spring Boot'un varsayılan portu
+EXPOSE 8080 
+ENTRYPOINT ["java","-jar","app.jar"]
