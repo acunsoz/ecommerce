@@ -10,5 +10,5 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 # Spring Boot'un varsayılan portu
-EXPOSE 8080 
+EXPOSE 8080
 ENTRYPOINT ["java","-jar","app.jar"]

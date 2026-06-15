@@ -1,11 +1,12 @@
 package com.acunsoz.ecommerce_backend.controller;
 
-import com.acunsoz.ecommerce_backend.model.dto.AuthResponse;
-import com.acunsoz.ecommerce_backend.model.dto.LoginRequest;
-import com.acunsoz.ecommerce_backend.model.dto.RegisterRequest;
+import com.acunsoz.ecommerce_backend.model.dto.*;
 import com.acunsoz.ecommerce_backend.service.AuthenticationService;
+import com.acunsoz.ecommerce_backend.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthenticationService authenticationService;
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request)
@@ -33,5 +36,32 @@ public class AuthController {
         return ResponseEntity.ok(authenticationService.login(request));
 
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody RefreshRequest request) {
+        String refreshToken = request.getRefreshToken();
+
+        // 1. Token'ın içinden kullanıcı adını çıkar
+        String username = jwtService.extractUserName(refreshToken);
+
+        if (username != null) {
+            // 2. Veritabanından kullanıcı detaylarını yükle
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            // 3. Refresh token'ın hala geçerli olup olmadığını kontrol et
+            if (jwtService.isTokenValid(refreshToken, userDetails)) {
+
+                // 4. SİHİRLİ AN: Yeni bir Access Token üret (İstersek refresh'i de yenileyebiliriz)
+                String newAccessToken = jwtService.generateToken(userDetails);
+
+                // 5. Flutter'a yeni token'ları fırlat
+                return ResponseEntity.ok(new JwtResponse(newAccessToken, refreshToken));
+            }
+        }
+
+        // Eğer token sahteyse veya süresi dolmuşsa (7 gün geçmişse)
+        return ResponseEntity.status(401).body("Refresh token geçersiz veya süresi dolmuş. Lütfen tekrar giriş yapın.");
+    }
+
 
 }

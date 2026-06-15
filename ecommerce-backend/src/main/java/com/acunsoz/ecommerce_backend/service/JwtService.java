@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "404E635266556A586E327235753878214125442A472D4B6150645367566B5970";
+    //private static final String SECRET_KEY = "404E635266556A586E327235753878214125442A472D4B6150645367566B5970";
 
     // Artık şifreyi ve süreleri properties dosyasından güvenle çekiyoruz
     @Value("${jwt.secret}")
