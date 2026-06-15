@@ -19,18 +19,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Category k2 = Category.builder()
-                .name("Giyim")
-                .build();
-        categoryRepository.save(k2);
-        Category k3 = Category.builder()
-                .name("Beyaz Eşya")
-                .build();
-        categoryRepository.save(k3);
-        Category k4 = Category.builder()
-                .name("Kitaplar")
-                .build();
-        categoryRepository.save(k4);
+        
 
         if (categoryRepository.findByName("Elektronik").isEmpty()) {
             Category k1 = Category.builder()
