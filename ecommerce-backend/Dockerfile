@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # 2. Aşama: Sadece derlenen JAR dosyasını al ve çalıştır (Run)
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 # Spring Boot'un varsayılan portu
