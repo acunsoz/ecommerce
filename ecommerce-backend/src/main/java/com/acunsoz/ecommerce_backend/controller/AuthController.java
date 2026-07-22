@@ -18,7 +18,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    @GetMapping("/api/health")
+    @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("Sunucu 10 Numara Çalışıyor!");
     }
